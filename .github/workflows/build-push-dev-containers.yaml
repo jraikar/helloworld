@@ -2,7 +2,7 @@
 on:
   push:
     branches:         # array of glob patterns matching against refs/heads. Optional; defaults to all
-    - main            # triggers on pushes that contain changes in main
+    - master            # triggers on pushes that contain changes in main
 
 name: Build and Push to DEV ECR
 
@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@main
+      uses: actions/checkout@master
 
     # Add steps here like linting, testing, minification, etc.
     - name: Configure AWS credentials
