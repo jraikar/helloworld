@@ -4,23 +4,17 @@ name: pr-unit-tests
     branches:
       - master
 jobs:
-  go-versions:
-    name: Lookup go versions
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.versions.outputs.matrix }}
     steps:
     - uses: actions/checkout@v2
     - uses: arnested/go-version-action@v1
       id: versions
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      - name: Install go
-        uses: actions/setup-go@v2
-      - name: run tests
-        run: make test
+    - name: Check out code
+      uses: actions/checkout@v2
+    - name: Install go
+      uses: actions/setup-go@v2
+    - name: run tests
+      run: make test
