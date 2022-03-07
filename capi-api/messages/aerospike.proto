@@ -1,0 +1,83 @@
+
+syntax = "proto3";
+
+option go_package = "github.com/aerospike/aerostation/capi-api/messages";
+package messages;
+
+import "kubernetes.proto";
+
+message CreateAerospikeClusterRequest {
+    string KubernetesClusterName = 1;
+    string KubernetesClusterNamespace = 2;
+    string TargetNamespace = 3;
+    bool DeployClient = 4;
+    string Name = 5;
+    string Namespace = 6;
+    string DatabaseType = 7;
+    DatabaseOptions Options = 8;
+}
+
+message DatabaseOptions {
+    int32 Replicas = 1;
+}
+
+message CreateAerospikeClusterResponse {}
+
+message GetAerospikeClusterRequest {
+    string AerospikeName = 1;
+    string AerospikeNamespace = 2;
+}
+message GetAerospikeClusterResponse {
+    bytes Cluster = 1;
+    bytes Status = 2;
+}
+
+message GetAerospikeClustersByNamespaceRequest {
+    string AerospikeNamespace = 1;
+}
+message GetAerospikeClustersResponse {
+    bytes Clusters = 1;
+}
+
+message GetAllAerospikeClustersRequest {
+
+}
+
+
+message UpdateAerospikeClusterRequest {
+    string ClusterName = 1;
+    string ClusterNamespace = 2;
+    DatabaseOptions Options = 3;
+}
+message UpdateAerospikeClusterResponse {}
+
+message DeleteAerospikeClusterRequest {
+    string AerospikeName = 1;
+    string AerospikeNamespace = 2;
+}
+message DeleteAerospikeClusterResponse {}
+
+
+message IsKubernetesClusterRequest {
+    NamespacedName cluster = 1;
+}
+message IsKubernetesClusterResponse {
+    bool is_kubernetes_cluster = 1;
+}
+
+message MapRegionToSharedClusterRequest {
+    string cloud = 1; //TODO: make enum
+    string region = 2;
+}
+message MapRegionToSharedClusterResponse {
+    NamespacedName cluster = 1;
+}
+
+message MapRegionToClusterRequest {
+    string cloud = 1; //TODO: make enum
+    string region = 2;
+    string user_namespace = 3;
+}
+message MapRegionToClusterResponse {
+    NamespacedName cluster = 1;
+}

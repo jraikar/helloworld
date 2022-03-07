@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+spec:
+  selector:
+    matchLabels:
+      run: api-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: api-server
+    spec:
+      containers:
+      - name: api-server
+        image: 271036156099.dkr.ecr.us-west-1.amazonaws.com/api-server:687e60a670a9732722a948fa9f52e6a864d57a2d
+        ports:
+        - containerPort: 8085
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aerostation-api-service
+  labels:
+    run: aerostation-api-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8085
+    protocol: TCP
+  selector:
+    run: api-server
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: aeroclustermanager-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aeroclustermanager-editor-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: aerodatabase-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aerodatabase-editor-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aeroclustermanager-editor-role
+rules:
+  - apiGroups:
+      - aerostation.aerospike.com
+    resources:
+      - aeroclustermanagers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - aerostation.aerospike.com
+    resources:
+      - aeroclustermanagers/status
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aerodatabase-editor-role
+rules:
+  - apiGroups:
+      - aerostation.aerospike.com
+    resources:
+      - aerodatabases
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - aerostation.aerospike.com
+    resources:
+      - aerodatabases/status
+    verbs:
+      - get

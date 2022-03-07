@@ -1,0 +1,36 @@
+
+syntax = "proto3";
+
+option go_package = "github.com/aerospike/aerostation/capi-api/messages";
+
+package messages;
+
+//import "capi-api/messages/kubernetes.proto";
+//import "capi-api/messages/aerospike.proto";
+import "aerospike.proto";
+import "kubernetes.proto";
+
+
+service AerostationKubernetesAPI {
+	rpc CreateCluster(CreateKubernetesClusterRequest) returns (CreateKubernetesClusterResponse) {}
+	rpc GetCluster(GetKubernetesClusterRequest) returns (GetKubernetesClusterResponse) {}
+	rpc GetClusters(GetKubernetesClustersRequest) returns (GetKubernetesClustersResponse) {}
+	rpc UpdateCluster(UpdateKubernetesClusterRequest) returns (UpdateKubernetesClusterResponse) {}
+	rpc DeleteCluster(DeleteKubernetesClusterRequest) returns (DeleteKubernetesClusterResponse) {}
+
+	// Validation
+	rpc IsKubernetesCluster(IsKubernetesClusterRequest) returns (IsKubernetesClusterResponse) {}
+
+	// Info
+	rpc MapRegionToSharedCluster(MapRegionToSharedClusterRequest) returns (MapRegionToSharedClusterResponse) {}
+	rpc MapRegionToCluster(MapRegionToClusterRequest) returns (MapRegionToClusterResponse) {}
+}
+
+service AerostationAerospikeAPI {
+	rpc CreateCluster(CreateAerospikeClusterRequest) returns (CreateAerospikeClusterResponse) {}
+	rpc GetCluster(GetAerospikeClusterRequest) returns (GetAerospikeClusterResponse) {}
+	rpc GetClusters(GetAerospikeClustersByNamespaceRequest) returns (GetAerospikeClustersResponse) {}
+	rpc GetAllClusters(GetAllAerospikeClustersRequest) returns (GetAerospikeClustersResponse) {}
+	rpc UpdateCluster(UpdateAerospikeClusterRequest) returns (UpdateAerospikeClusterResponse) {}
+	rpc DeleteCluster(DeleteAerospikeClusterRequest) returns (DeleteAerospikeClusterResponse) {}
+}

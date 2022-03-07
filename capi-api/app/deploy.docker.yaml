@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capi-api
+spec:
+  selector:
+    matchLabels:
+      run: capi-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: capi-api
+    spec:
+      containers:
+        - name: capi-api
+          image: localhost:5000/capi-api:0.0.1
+          ports:
+            - containerPort: 10000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aerostation-capi-service
+  labels:
+    run: aerostation-capi-service
+spec:
+  ports:
+    - port: 10000
+      targetPort: 10000
+      protocol: TCP
+  selector:
+    run: capi-api
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: aeroclustermanager-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aeroclustermanager-editor-role
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: aerodatabase-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aerodatabase-editor-role
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aeroclustermanager-editor-role
+rules:
+  - apiGroups:
+      - aerostation.aerospike.com
+    resources:
+      - aeroclustermanagers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - aerostation.aerospike.com
+    resources:
+      - aeroclustermanagers/status
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aerodatabase-editor-role
+rules:
+  - apiGroups:
+      - aerostation.aerospike.com
+    resources:
+      - aerodatabases
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - aerostation.aerospike.com
+    resources:
+      - aerodatabases/status
+    verbs:
+      - get

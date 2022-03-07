@@ -1,0 +1,7 @@
+apiVersion: aerostation.aerospike.com/v1
+kind: AeroDatabase
+metadata:
+  name: aerodatabase-sample
+spec:
+  # Add fields here
+  foo: bar
