@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+option go_package = "github.com/aerospike/aerostation/capi-api/messages";
+
+package messages;
+
+message GetKubernetesClusterRequest {
+  string Namespace = 1;
+  string Name = 2;
+}
+message GetKubernetesClustersRequest {
+  string Namespace = 1;
+}
+
+message GetKubernetesClustersResponse {
+  bytes Clusters = 1;
+}
+
+message NamespacedName {
+  string Name = 1;
+  string Namespace = 2;
+}
+
+message GetKubernetesClusterResponse {
+  bytes Cluster = 1;
+  bytes Status = 2;
+}
+message CreateKubernetesClusterResponse {}
+
+message UpdateKubernetesClusterResponse {}
+message DeleteKubernetesClusterResponse {}
+
+message CreateKubernetesClusterRequest {
+  string Name = 1;
+  string Namespace = 2;
+  CreateEKSKubernetesClusterRequest Eks = 3;
+  CreateAKSKubernetesClusterRequest Aks = 4;
+  CreateGCPKubernetesClusterRequest Gke = 5;
+  CreateDockerKubernetesClusterRequest Docker = 6;
+  string Provider = 7;
+  string KubeVersion = 8;
+  int32 Replicas = 9;
+}
+
+message CreateDockerKubernetesClusterRequest {
+}
+message CreateEKSKubernetesClusterRequest {
+  string Region = 1;
+  string InstanceType = 2;
+  string SSHKey = 3;
+}
+
+message CreateAKSKubernetesClusterRequest {
+  string Name = 1;
+  string Region = 2;
+  string InstanceType = 3;
+  string SSHKey = 4;
+}
+
+message CreateGCPKubernetesClusterRequest {
+  string Name = 1;
+  string Region = 2;
+  string InstanceType = 3;
+  string SSHKey = 4;
+}
+
+message DeleteKubernetesClusterRequest {
+  string Name = 1;
+  string Namespace = 2;
+}
+
+message UpdateKubernetesClusterRequest {
+  string Name = 1;
+  string Namespace = 2;
+  CreateEKSKubernetesClusterRequest Eks = 3;
+  CreateAKSKubernetesClusterRequest Aks = 4;
+  CreateGCPKubernetesClusterRequest Gke = 5;
+  CreateDockerKubernetesClusterRequest Docker = 6;
+  int32 Replicas = 7;
+}

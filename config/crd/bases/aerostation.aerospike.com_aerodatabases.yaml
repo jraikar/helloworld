@@ -1,0 +1,101 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+  creationTimestamp: null
+  name: aerodatabases.aerostation.aerospike.com
+spec:
+  group: aerostation.aerospike.com
+  names:
+    kind: AeroDatabase
+    listKind: AeroDatabaseList
+    plural: aerodatabases
+    singular: aerodatabase
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: AeroDatabase is the Schema for the aerodatabases API swagger:model
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: AeroDatabaseSpec defines the desired state of AeroDatabase
+              swagger:model
+            properties:
+              clusterKey:
+                description: 'ClusterKey of database kubernetes cluster required :
+                  true'
+                properties:
+                  name:
+                    type: string
+                  namespace:
+                    type: string
+                type: object
+              databaseType:
+                description: 'DatabaseType of the aerospike cluster (memory/ssd/performance)
+                  required : true example : memory'
+                type: string
+              deployClient:
+                description: 'flag if set will cause the REST client to be deployed
+                  required : false example : true'
+                type: boolean
+              name:
+                description: 'Name of aerospike cluster required : true example: name'
+                type: string
+              namespace:
+                description: 'Namespace of aerospike cluster required : true example
+                  : default'
+                type: string
+              options:
+                description: 'Options of the aerospike cluster, the only thing that
+                  can be changed after creation required : true'
+                properties:
+                  replicas:
+                    description: 'Replicas of the aerospike cluster required : true
+                      example : 2'
+                    format: int32
+                    type: integer
+                type: object
+              targetNamespace:
+                description: 'Namespace on remote cluster where aerospike database
+                  will be created required : true example : default'
+                type: string
+            type: object
+          status:
+            description: AeroDatabaseStatus defines the observed state of AeroDatabase
+              swagger:model
+            properties:
+              lastError:
+                type: string
+              phase:
+                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                  of cluster Important: Run "make" to regenerate code after modifying
+                  this file'
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

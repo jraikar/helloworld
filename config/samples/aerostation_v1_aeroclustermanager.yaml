@@ -1,0 +1,12 @@
+apiVersion: aerostation.aerospike.com/v1
+kind: AeroClusterManager
+metadata:
+  name: aeroclustermanager-sample
+spec:
+  foo: blarg
+  controlPlaneEndpoint: 
+    host: string
+    port: 1234
+  clusterId:
+    name: bob
+    namespace: alice

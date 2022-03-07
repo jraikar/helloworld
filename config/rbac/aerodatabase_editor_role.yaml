@@ -1,0 +1,24 @@
+# permissions for end users to edit aerodatabases.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: aerodatabase-editor-role
+rules:
+- apiGroups:
+  - aerostation.aerospike.com
+  resources:
+  - aerodatabases
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - aerostation.aerospike.com
+  resources:
+  - aerodatabases/status
+  verbs:
+  - get

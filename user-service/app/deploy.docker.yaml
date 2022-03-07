@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  selector:
+    matchLabels:
+      run: user-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: localhost:5000/user-service:0.0.1
+          ports:
+            - containerPort: 8081
+          env:
+            - name: COGNITO_APP_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: cognito-app-client-id
+            - name: COGNITO_USER_POOL_ID
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: cognito-user-pool-id
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: aws-region
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: aws-secret-access-key
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: user-service-secrets
+data:
+  cognito-app-client-id: N251YnVjZ20wdDQ1cml0dnVqYmdlNGk4YWI=
+  cognito-user-pool-id: dXMtZWFzdC0xX1E1cFR1Z24wZg==
+  aws-region: dXMtZWFzdC0x
+  aws-access-key-id: QUtJQVQ2R1lEUkRCUVVLNUdUWkk=
+  aws-secret-access-key: RW9IU3Y1NDdzbVZoMFV5WUZVQUZjRWRMdHRoTjZCc1FlWHBJT21CVQ==

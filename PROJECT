@@ -1,0 +1,35 @@
+domain: aerospike.com
+layout:
+- go.kubebuilder.io/v3
+projectName: aerostation
+repo: github.com/aerospike/aerostation
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: aerospike.com
+  group: aerostation
+  kind: AeroDatabase
+  path: github.com/aerospike/aerostation/api/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: aerospike.com
+  group: aerostation
+  kind: AeroClusterManager
+  path: github.com/aerospike/aerostation/api/v1
+  version: v1
+- api:
+    crdVersion: v1alpha1
+    namespaced: true
+  controller: false
+  domain: aerospike.com
+  group: asdb
+  kind: AerospikeCluster
+  version: v1alpha1
+  webhookVersion: v1
+  path: github.com/aerospike/aerostation/api/v1alpha1
+version: "3"

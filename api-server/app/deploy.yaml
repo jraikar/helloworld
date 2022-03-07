@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-server
+spec:
+  selector:
+    matchLabels:
+      run: api-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: api-server
+    spec:
+      containers:
+        - name: api-server
+          image: 271036156099.dkr.ecr.us-west-1.amazonaws.com/api-server:39118f6216d7378cddbfbe36fb018319d7d10030
+          ports:
+            - containerPort: 8085
+          env:
+            - name: COGNITO_APP_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: cognito-app-client-id
+            - name: COGNITO_USER_POOL_ID
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: cognito-user-pool-id
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: aws-region
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: aws-secret-access-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: capi-api-service
+  labels:
+    run: capi-api-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8085
+      protocol: TCP
+  selector:
+    run: api-server
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: default
+  name: api-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/*
+            pathType: Prefix
+            backend:
+              service:
+                name: capi-api-service
+                port: 
+                  number: 80
