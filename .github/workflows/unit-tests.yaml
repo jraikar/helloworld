@@ -7,11 +7,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: arnested/go-version-action@v1
-      id: versions
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
     - name: Check out code
       uses: actions/checkout@v2
     - name: Install go
