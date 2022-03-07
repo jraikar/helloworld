@@ -1,0 +1,30 @@
+name: pr-integration-tests
+on:
+  pull_request:
+    branches: 
+    - main 
+
+env:
+  REGISTRY: localhost:5000
+  IMAGE_TAG: pr
+jobs:
+  create-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.2.0
+      - name: controller - Build, tag, and push image to kind cluster
+        env:
+          IMAGE: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $REGISTRY/$IMAGE:$IMAGE_TAG .
+          docker push $REGISTRY/$IMAGE:$IMAGE_TAG
+      - name: test if image exists
+        run: |
+          result=$( sudo docker images -q nginx )
+          if [[ -n "$result" ]]; then
+            echo "Container exists"
+          else
+            echo "No such container"
+          fi
+      
