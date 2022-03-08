@@ -18,7 +18,6 @@ import (
 
 	v1 "github.com/aerospike/aerostation/api/v1"
 	"github.com/aerospike/aerostation/pkg/utils"
-	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/pointer"
@@ -303,6 +302,7 @@ func getCapiClusterDocker(createOpt *v1.ClusterOptions) *capiv1beta1.Cluster {
 	}
 }
 
+/**
 func debug(o interface{}) {
 	y, err := yaml.Marshal(o)
 	if err != nil {
@@ -310,6 +310,7 @@ func debug(o interface{}) {
 	}
 	log.Printf("%s\n", string(y))
 }
+*/
 
 func ApplyCNI(ctx context.Context, c client.Client, tracker *remote.ClusterCacheTracker, clusterkey client.ObjectKey) error {
 	// see if a calico resource already exists on the aerostation deployed cluster, if so, assume we have already applied CNI

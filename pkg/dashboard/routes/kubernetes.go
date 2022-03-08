@@ -31,14 +31,20 @@ func (c *KubernetesRouter) GetAllKubernetesClusters(w http.ResponseWriter, r *ht
 	err := c.Client.List(context.Background(), clusters)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("unable to get all kubernetes clusters " + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("unable to get all kubernetes clusters " + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 	}
 
 	var response []string
 	for _, v := range clusters.Items {
 		response = append(response, v.GetName())
 	}
-	json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 func (c *KubernetesRouter) GetKubernetesClusterSpec(w http.ResponseWriter, r *http.Request) {
@@ -51,17 +57,26 @@ func (c *KubernetesRouter) GetKubernetesClusterSpec(w http.ResponseWriter, r *ht
 	err := c.Client.List(context.Background(), clusters)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("unable to get cluster " + clusterName + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("unable to get cluster " + clusterName + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 	}
 
 	for _, v := range clusters.Items {
 		if clusterName == v.Name {
-			json.NewEncoder(w).Encode(v.Spec)
+			err := json.NewEncoder(w).Encode(v.Spec)
+			if err != nil {
+				fmt.Printf("error %s\n", err.Error())
+			}
 			return
 		}
 	}
 	w.WriteHeader(http.StatusNotFound)
-	json.NewEncoder(w).Encode("cluster not found ")
+	err = json.NewEncoder(w).Encode("cluster not found ")
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 func (c *KubernetesRouter) GetKubernetesClusterStatus(w http.ResponseWriter, r *http.Request) {
@@ -74,17 +89,26 @@ func (c *KubernetesRouter) GetKubernetesClusterStatus(w http.ResponseWriter, r *
 	err := c.Client.List(context.Background(), clusters)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		json.NewEncoder(w).Encode("unable to get cluster " + clusterName + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("unable to get cluster " + clusterName + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 	}
 
 	for _, v := range clusters.Items {
 		if clusterName == v.Name {
-			json.NewEncoder(w).Encode(v.Status)
+			err := json.NewEncoder(w).Encode(v.Status)
+			if err != nil {
+				fmt.Printf("error %s\n", err.Error())
+			}
 			return
 		}
 	}
 	w.WriteHeader(http.StatusNotFound)
-	json.NewEncoder(w).Encode("cluster not found ")
+	err = json.NewEncoder(w).Encode("cluster not found ")
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 func (c *KubernetesRouter) CreateKubernetesCluster(w http.ResponseWriter, r *http.Request) {
@@ -94,7 +118,10 @@ func (c *KubernetesRouter) CreateKubernetesCluster(w http.ResponseWriter, r *htt
 	var input v1.ClusterOptions
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Unable to create cluster" + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("Unable to create cluster" + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
@@ -127,12 +154,17 @@ func (c *KubernetesRouter) CreateKubernetesCluster(w http.ResponseWriter, r *htt
 
 	if err := c.Client.Create(context.TODO(), cluster); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		json.NewEncoder(w).Encode(fmt.Sprintf("Unable to create cluster: %s", err.Error()))
+		err := json.NewEncoder(w).Encode(fmt.Sprintf("Unable to create cluster: %s", err.Error()))
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
-	json.NewEncoder(w).Encode("Cluster created successfully")
-	return
+	err := json.NewEncoder(w).Encode("Cluster created successfully")
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 func (c *KubernetesRouter) DeleteKubernetesCluster(w http.ResponseWriter, r *http.Request) {
@@ -144,7 +176,10 @@ func (c *KubernetesRouter) DeleteKubernetesCluster(w http.ResponseWriter, r *htt
 
 	if clusterName == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid input")
+		err := json.NewEncoder(w).Encode("Invalid input")
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
@@ -160,18 +195,26 @@ func (c *KubernetesRouter) DeleteKubernetesCluster(w http.ResponseWriter, r *htt
 	ctx := context.Background()
 	if err := c.Client.Get(ctx, types.NamespacedName{Name: clusterName, Namespace: metav1.NamespaceDefault}, cluster); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		json.NewEncoder(w).Encode("unable to delete cluster " + clusterName + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("unable to delete cluster " + clusterName + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
 	if err := c.Client.Delete(context.Background(), cluster); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Unable to delete cluster " + clusterName + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("Unable to delete cluster " + clusterName + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
-	json.NewEncoder(w).Encode("Cluster deleted successfully")
-	return
+	err := json.NewEncoder(w).Encode("Cluster deleted successfully")
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 func (c *KubernetesRouter) UpdateKubernetesCluster(w http.ResponseWriter, r *http.Request) {
@@ -182,7 +225,10 @@ func (c *KubernetesRouter) UpdateKubernetesCluster(w http.ResponseWriter, r *htt
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		log.Println("[ERROR] :  ", err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Unable to update cluster " + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("Unable to update cluster " + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
@@ -197,7 +243,10 @@ func (c *KubernetesRouter) UpdateKubernetesCluster(w http.ResponseWriter, r *htt
 			Namespace: metav1.NamespaceDefault,
 		}, manager); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
-			json.NewEncoder(w).Encode("Unable to update cluster " + "| Reason : " + err.Error())
+			err := json.NewEncoder(w).Encode("Unable to update cluster " + "| Reason : " + err.Error())
+			if err != nil {
+				fmt.Printf("error %s\n", err.Error())
+			}
 			return
 		}
 	}
@@ -205,7 +254,10 @@ func (c *KubernetesRouter) UpdateKubernetesCluster(w http.ResponseWriter, r *htt
 	patchHelper, err := patch.NewHelper(manager, c.Client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
-		json.NewEncoder(w).Encode("Unable to update cluster " + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("Unable to update cluster " + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
@@ -221,10 +273,15 @@ func (c *KubernetesRouter) UpdateKubernetesCluster(w http.ResponseWriter, r *htt
 
 	if err = patchHelper.Patch(context.Background(), manager); err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
-		json.NewEncoder(w).Encode("Unable to update cluster " + "|  Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("Unable to update cluster " + "|  Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
-	json.NewEncoder(w).Encode("Cluster updated successfully")
-	return
+	err = json.NewEncoder(w).Encode("Cluster updated successfully")
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }

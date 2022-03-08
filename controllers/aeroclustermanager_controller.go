@@ -22,10 +22,8 @@ import (
 
 	"github.com/argoproj/gitops-engine/pkg/utils/kube"
 	"github.com/go-logr/logr"
-	"github.com/pkg/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	kerrors "k8s.io/apimachinery/pkg/util/errors"
@@ -171,7 +169,10 @@ func (r *AeroClusterManagerReconciler) deleteExternalResources(ctx context.Conte
 	}
 
 	for _, cluster := range clusters {
-		r.Delete(ctx, &cluster)
+		err := r.Delete(ctx, &cluster)
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 	}
 
 	cluster := &v1beta1.Cluster{}
@@ -347,7 +348,7 @@ func (r *AeroClusterManagerReconciler) reconcileGitRepo(ctx context.Context, man
 		//todo: take values from config
 		Spec: fleet.GitRepoSpec{
 			//Repo:                  "git@github.com:citrusleaf/aerostation-workload-deploy.git",
-			Repo:                  "git@github.com:jmccormick2001/aerostation-workload-deploy.git",
+			Repo:                  "git@github.com:jmccormick2001/aerostation-workload-deploy-1.git",
 			Branch:                "main",
 			ClientSecretName:      GithubSecret,
 			InsecureSkipTLSverify: false,
@@ -377,6 +378,7 @@ func (r *AeroClusterManagerReconciler) reconcileGitRepo(ctx context.Context, man
 }
 
 // reconcileOperator handles the reconcilation of operator related tasks
+/**
 func (r *AeroClusterManagerReconciler) reconcileOperator(ctx context.Context, manager *v1.AeroClusterManager, cluster *v1beta1.Cluster) (_ ctrl.Result, reterr error) {
 	clusterkey := util.ObjectKey(cluster)
 
@@ -441,6 +443,7 @@ func (r *AeroClusterManagerReconciler) reconcileOperator(ctx context.Context, ma
 
 	return ctrl.Result{}, reterr
 }
+*/
 
 func (r *AeroClusterManagerReconciler) reconcilePhase(manager *v1.AeroClusterManager, cluster *v1beta1.Cluster) {
 	if manager.Status.Phase == "" {

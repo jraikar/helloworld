@@ -2,9 +2,10 @@ package auth
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cognitoidentityprovider"
-	"net/http"
 )
 
 type CognitoRouter struct {
@@ -88,7 +89,12 @@ func (c *CognitoRouter) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("signup complete !"))
+	_, err = w.Write([]byte("signup complete !"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 }
 
 //SignInRequest
