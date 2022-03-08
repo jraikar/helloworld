@@ -1,0 +1,39 @@
+name: pr-linting
+on:
+  pull_request:
+    branches: 
+    - main 
+
+jobs:
+  golint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: lint-api-server
+        uses: golangci/golangci-lint-action@v2
+        with:
+          # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
+          version: v1.42
+          # Optional: working directory, useful for monorepos
+          args: --timeout 3m0s
+          working-directory: api-server
+      - name: lint-capi-api
+        uses: golangci/golangci-lint-action@v2
+        with:
+          # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
+          version: v1.42
+          # Optional: working directory, useful for monorepos
+          working-directory: capi-api
+      - name: lint-aerostation
+        uses: golangci/golangci-lint-action@v2
+        with:
+          # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
+          version: v1.42
+      - name: lint-user-service
+        uses: golangci/golangci-lint-action@v2
+        with:
+          # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
+          version: v1.42
+          # Optional: working directory, useful for monorepos
+          working-directory: user-service
