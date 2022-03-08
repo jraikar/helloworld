@@ -31,13 +31,19 @@ func (c *AerospikeRouter) GetAllAerospikeClusters(w http.ResponseWriter, r *http
 	err := c.Client.List(context.Background(), databases)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode("unable to get aerospike clusters " + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("unable to get aerospike clusters " + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 	}
 	var response []string
 	for _, v := range databases.Items {
 		response = append(response, v.GetName())
 	}
-	json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 func (c *AerospikeRouter) GetAerospikeClusterSpec(w http.ResponseWriter, r *http.Request) {
@@ -50,17 +56,26 @@ func (c *AerospikeRouter) GetAerospikeClusterSpec(w http.ResponseWriter, r *http
 	err := c.Client.List(context.Background(), databases)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode("unable to get database " + dbName + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("unable to get database " + dbName + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 	}
 
 	for _, v := range databases.Items {
 		if dbName == v.Name {
-			json.NewEncoder(w).Encode(v.Spec)
+			err := json.NewEncoder(w).Encode(v.Spec)
+			if err != nil {
+				fmt.Printf("error %s\n", err.Error())
+			}
 			return
 		}
 	}
 	w.WriteHeader(http.StatusNotFound)
-	json.NewEncoder(w).Encode("database not found ")
+	err = json.NewEncoder(w).Encode("database not found ")
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 func (c *AerospikeRouter) GetAerospikeClusterStatus(w http.ResponseWriter, r *http.Request) {
@@ -72,17 +87,26 @@ func (c *AerospikeRouter) GetAerospikeClusterStatus(w http.ResponseWriter, r *ht
 	databases := &v1.AeroDatabaseList{}
 	err := c.Client.List(context.Background(), databases)
 	if err != nil {
-		json.NewEncoder(w).Encode("unable to get database " + dbName + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("unable to get database " + dbName + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 	}
 
 	for _, v := range databases.Items {
 		if dbName == v.Name {
-			json.NewEncoder(w).Encode(v.Status)
+			err := json.NewEncoder(w).Encode(v.Status)
+			if err != nil {
+				fmt.Printf("error %s\n", err.Error())
+			}
 			return
 		}
 	}
 	w.WriteHeader(http.StatusNotFound)
-	json.NewEncoder(w).Encode("cluster not found ")
+	err = json.NewEncoder(w).Encode("cluster not found ")
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 func (c *AerospikeRouter) CreateAerospikeCluster(w http.ResponseWriter, r *http.Request) {
@@ -94,7 +118,10 @@ func (c *AerospikeRouter) CreateAerospikeCluster(w http.ResponseWriter, r *http.
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		log.Println("[ERROR] : ", err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Unable to create database" + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("Unable to create database" + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
@@ -121,12 +148,17 @@ func (c *AerospikeRouter) CreateAerospikeCluster(w http.ResponseWriter, r *http.
 
 	if err := c.Client.Create(context.TODO(), database); err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
-		json.NewEncoder(w).Encode("Unable to create cluster")
+		err := json.NewEncoder(w).Encode("Unable to create cluster")
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
-	json.NewEncoder(w).Encode("Cluster created successfully")
-	return
+	err := json.NewEncoder(w).Encode("Cluster created successfully")
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 func (c *AerospikeRouter) DeleteAerospikeCluster(w http.ResponseWriter, r *http.Request) {
@@ -139,7 +171,10 @@ func (c *AerospikeRouter) DeleteAerospikeCluster(w http.ResponseWriter, r *http.
 
 	if clusterName == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid input")
+		err := json.NewEncoder(w).Encode("Invalid input")
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
@@ -155,18 +190,27 @@ func (c *AerospikeRouter) DeleteAerospikeCluster(w http.ResponseWriter, r *http.
 	ctx := context.Background()
 	if err := c.Client.Get(ctx, types.NamespacedName{Name: clusterName, Namespace: metav1.NamespaceDefault}, cluster); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		json.NewEncoder(w).Encode("unable to delete aerospike cluster " + clusterName + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("unable to delete aerospike cluster " + clusterName + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
+
 		return
 	}
 
 	if err := c.Client.Delete(context.Background(), cluster); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Unable to delete aerospike cluster " + clusterName + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("Unable to delete aerospike cluster " + clusterName + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
-	json.NewEncoder(w).Encode("Cluster deleted successfully")
-	return
+	err := json.NewEncoder(w).Encode("Cluster deleted successfully")
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 func (c *AerospikeRouter) GetAllAerospikeClustersForKubernetesCluster(w http.ResponseWriter, r *http.Request) {
@@ -179,7 +223,10 @@ func (c *AerospikeRouter) GetAllAerospikeClustersForKubernetesCluster(w http.Res
 	err := c.Client.List(context.Background(), databases)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode("unable to get databases for kubernetes cluster " + kubeID + ". Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("unable to get databases for kubernetes cluster " + kubeID + ". Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
@@ -192,11 +239,17 @@ func (c *AerospikeRouter) GetAllAerospikeClustersForKubernetesCluster(w http.Res
 
 	if len(response) < 1 {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode("cluster not found ")
+		err := json.NewEncoder(w).Encode("cluster not found ")
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
-	json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 func (c *AerospikeRouter) UpdateAerospikeCluster(w http.ResponseWriter, r *http.Request) {
@@ -211,7 +264,10 @@ func (c *AerospikeRouter) UpdateAerospikeCluster(w http.ResponseWriter, r *http.
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		log.Println("[ERROR] : ", err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Unable to create database")
+		err := json.NewEncoder(w).Encode("Unable to create database")
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
@@ -227,14 +283,20 @@ func (c *AerospikeRouter) UpdateAerospikeCluster(w http.ResponseWriter, r *http.
 		Namespace: metav1.NamespaceDefault,
 	}, db); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Unable to update cluster " + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("Unable to update cluster " + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
 	patchHelper, err := patch.NewHelper(db, c.Client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
-		json.NewEncoder(w).Encode("Unable to update cluster " + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("Unable to update cluster " + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
@@ -243,10 +305,15 @@ func (c *AerospikeRouter) UpdateAerospikeCluster(w http.ResponseWriter, r *http.
 
 	if err = patchHelper.Patch(context.Background(), db); err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
-		json.NewEncoder(w).Encode("Unable to update cluster " + "|  Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("Unable to update cluster " + "|  Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 		return
 	}
 
-	json.NewEncoder(w).Encode("Cluster updated successfully")
-	return
+	err = json.NewEncoder(w).Encode("Cluster updated successfully")
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }

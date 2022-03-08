@@ -202,7 +202,6 @@ func (k *KubernetesRouter) CreateKubernetesCluster(w http.ResponseWriter, r *htt
 	}
 
 	json.NewEncoder(w).Encode("Cluster created successfully")
-	return
 }
 
 // Delete - delete cluster
@@ -254,7 +253,6 @@ func (k *KubernetesRouter) DeleteKubernetesCluster(w http.ResponseWriter, r *htt
 	}
 
 	json.NewEncoder(w).Encode("Cluster deleted successfully")
-	return
 }
 
 // UpdateKubernetesCluster - update cluster

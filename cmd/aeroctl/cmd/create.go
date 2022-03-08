@@ -17,7 +17,7 @@ import (
 type kubeConfigOptions struct {
 	kubeconfig        string
 	kubeconfigContext string
-	namespace         string
+	//namespace         string
 }
 
 var (

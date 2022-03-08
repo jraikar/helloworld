@@ -24,10 +24,15 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/aerospike/aerostation/api-server/cmd"
 )
 
 //go:generate swagger generate spec -o ./swaggerui/swagger.json -m
 func main() {
-	cmd.Execute()
+	err := cmd.Execute()
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }

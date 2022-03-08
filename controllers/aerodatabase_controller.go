@@ -200,7 +200,7 @@ func (r *AeroDatabaseReconciler) deleteExternalResources(ctx context.Context, db
 	obj := &v1beta1.AerospikeCluster{}
 	obj.Name = db.Spec.Name
 	obj.Namespace = db.Spec.Namespace
-	remoteClient.Delete(ctx, obj)
+	err = remoteClient.Delete(ctx, obj)
 
 	if err != nil {
 		return err

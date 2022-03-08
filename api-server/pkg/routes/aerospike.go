@@ -54,10 +54,16 @@ func (a *AerospikeRouter) GetAerospikeClusters(w http.ResponseWriter, r *http.Re
 	})
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode("Internal server error " + "| Reason : " + err.Error())
+		err := json.NewEncoder(w).Encode("Internal server error " + "| Reason : " + err.Error())
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 	}
 
-	json.NewEncoder(w).Encode(json.RawMessage(res.Clusters))
+	err = json.NewEncoder(w).Encode(json.RawMessage(res.Clusters))
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 //GetAerospikeCluster - Get aerospike cluster by name
@@ -98,10 +104,16 @@ func (a *AerospikeRouter) GetAerospikeCluster(w http.ResponseWriter, r *http.Req
 
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode("cluster not found ")
+		err := json.NewEncoder(w).Encode("cluster not found ")
+		if err != nil {
+			fmt.Printf("error %s\n", err.Error())
+		}
 	}
 
-	json.NewEncoder(w).Encode(json.RawMessage(res.Cluster))
+	err = json.NewEncoder(w).Encode(json.RawMessage(res.Cluster))
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
 }
 
 //CreateAerospikeCluster - Create Aerospike Database Cluster
@@ -213,7 +225,6 @@ func (a *AerospikeRouter) DeleteAerospikeCluster(w http.ResponseWriter, r *http.
 	}
 
 	json.NewEncoder(w).Encode("Aerospike cluster deleted successfully")
-	return
 }
 
 //UpdateAerospikeCluster - update aerospike cluster
@@ -275,5 +286,4 @@ func (a *AerospikeRouter) UpdateAerospikeCluster(w http.ResponseWriter, r *http.
 	}
 
 	json.NewEncoder(w).Encode("Cluster updated successfully")
-	return
 }

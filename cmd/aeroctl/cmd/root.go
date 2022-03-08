@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/MakeNowJust/heredoc"
 	aerostationv1 "github.com/aerospike/aerostation/api/v1"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -92,7 +91,12 @@ func NewAeroctlCommand(in io.Reader, out, err io.Writer) *cobra.Command {
 	//
 	// TODO: Consider adding a flag or file preference for setting
 	// the language, instead of just loading from the LANG env. variable.
-	i18n.LoadTranslations("kubectl", nil)
+	_ = i18n.LoadTranslations("kubectl", nil)
+	/**
+	if err != nil {
+		fmt.Printf("error %s\n", err.Error())
+	}
+	*/
 
 	// From this point and forward we get warnings on flags that contain "_" separators
 	rootCmd.SetGlobalNormalizationFunc(cliflag.WarnWordSepNormalizeFunc)
@@ -137,10 +141,12 @@ type normalizer struct {
 	string
 }
 
+/**
 func (s normalizer) heredoc() normalizer {
 	s.string = heredoc.Doc(s.string)
 	return s
 }
+*/
 
 func (s normalizer) trim() normalizer {
 	s.string = strings.TrimSpace(s.string)

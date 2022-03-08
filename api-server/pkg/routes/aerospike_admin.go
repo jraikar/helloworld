@@ -318,5 +318,4 @@ func (a *AerospikeAdminRouter) AdminUpdateAerospikeCluster(w http.ResponseWriter
 	}
 
 	json.NewEncoder(w).Encode("Cluster updated successfully")
-	return
 }
