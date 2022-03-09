@@ -16,4 +16,4 @@ jobs:
           # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
           version: v1.42
           # Optional: working directory, useful for monorepos
-          args: --timeout 3m0s --skip-dirs api --verbose
+          args: --timeout 3m0s --verbose --skip-dirs "api/v1alpha1,api/v1"
