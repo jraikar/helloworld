@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.2.0
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: capi-api Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: localhost:5000
